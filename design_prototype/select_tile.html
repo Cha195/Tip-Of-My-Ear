@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html>
+
+
+<head>
+    
+    <title></title>
+    
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing: border-box;
+        }
+    
+        .main_div-tiles{
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            
+        }
+        .container-tiles{
+            display: flex;
+            justify-content: center;
+            
+            padding-top: 40px;
+        }
+        .column-tiles{
+            display: flex;
+            flex-direction: column;
+            margin: 8px;
+            align-items: center;
+        }
+        .card-tile{
+            
+            padding: 20px 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            background-color:#ffffff;
+            border-radius: 12px;
+            margin: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 100%;
+        }
+        .card-tile a{
+            text-decoration: none;
+            color: #000000;
+            font-size: 30px;
+        }
+        
+        .points_main_div{
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 40px;
+            align-items: center;
+            background: #fafafa;
+        }
+        .input-tiles-container{
+            display: flex;
+            padding: 20px 40px;
+            justify-content: center;
+        }
+        
+        #txt_input_song{
+            border: none;
+            padding: 12px 16px;
+            width: 30%;
+            background-color:#f3f3f4;
+            border-radius: 12px;
+            border: 1px solid transparent;
+        }
+        #txt_input_song:focus{
+            outline: none;
+            border: 1px solid #737373;
+            background-color:#ffffff;
+        }
+        #btn_submit{
+            border-radius: 50%;
+            background-color:#f3f3f4;
+            padding: 8px;
+            height: 100%;
+            margin-left: 12px;
+            cursor: pointer;
+        }
+        .finished{
+            background-color: #e4e4e4;
+           
+            
+        }
+    </style>
+    </head>
+    
+    <body>
+        <div class="main_div-tiles">
+        
+            <div class="points_main_div">
+            
+            <div class="card-points">
+                
+                <h3>Player1 Name</h3>
+                <p>400 points</p>
+                
+                </div>
+                <div class="card-points">
+                
+                <h3>Player2 Name</h3>
+                <p>200 points</p>
+                
+                </div>
+            
+            </div>
+            <div class="container-tiles">
+        <div class="column-tiles">
+            
+            
+            <h2>90s</h2>
+            <div class="card-tile">
+            
+            <a>100</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>200</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>300</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>400</a>
+            </div>
+            <div class="card-tile finished">
+            
+            <a>none</a>
+            </div>
+        
+            </div>
+            
+            <!---Column-->
+             <div class="column-tiles">
+            
+            
+            <h2>2000s</h2>
+            <div class="card-tile">
+            
+            <a>100</a>
+            </div>
+                   <div class="card-tile finished player2">
+            
+            <a>P2</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>300</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>400</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>500</a>
+            </div>
+                 
+            </div>
+            
+            <!---Column-->
+             <div class="column-tiles">
+            
+            
+            <h2>2010s</h2>
+            <div class="card-tile">
+            
+            <a>100</a>
+            </div>
+                   <div class="card-tile">
+            
+            <a>200</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>300</a>
+            </div>
+            <div class="card-tile finished player1">
+            
+            <a>P1</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>500</a>
+            </div>
+            </div>
+            
+            <!---Column-->
+             <div class="column-tiles">
+            
+            <h2>2020</h2>
+            
+            <div class="card-tile">
+            
+            <a>100</a>
+            </div>
+                   <div class="card-tile">
+            
+            <a>200</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>300</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>400</a>
+            </div>
+            <div class="card-tile">
+            
+            <a>500</a>
+            </div>
+            </div>
+            
+            <!---Column-->
+        </div>
+            
+            <div class="input-tiles-container">
+            
+            
+            <input type="text" placeholder="Song name..." id="txt_input_song"/>
+                <img src="tick.svg"id="btn_submit"/>
+            </div>
+        </div>
+    
+    
+    
+    </body>
+
+</html>
