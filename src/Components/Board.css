@@ -1,0 +1,94 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+
+.main_div-tiles{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    
+}
+.container-tiles{
+    display: flex;
+    justify-content: center;
+    
+    padding-top: 40px;
+}
+.column-tiles{
+    display: flex;
+    flex-direction: column;
+    margin: 8px;
+    align-items: center;
+}
+.card-tile{
+    text-decoration: none;
+    padding: 20px 40px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    background-color:#ffffff;
+    border-radius: 12px;
+    margin: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 100%;
+    color: #000000;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.column-tiles a:hover {
+    text-decoration: none;
+}
+
+.card-tile h2{
+    text-decoration: none;
+    color: #000000;
+    font-size: 30px;
+}
+
+.points_main_div{
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    align-items: center;
+    background: #fafafa;
+}
+.input-tiles-container{
+    display: flex;
+    width: 100%;
+    padding: 20px 40px;
+    justify-content: center;
+}
+
+#txt_input_song{
+    border: none;
+    padding: 12px 16px;
+    width: 30%;
+    background-color:#f3f3f4;
+    border-radius: 12px;
+    border: 1px solid transparent;
+}
+#txt_input_song:focus{
+    outline: none;
+    border: 1px solid #737373;
+    background-color:#ffffff;
+}
+#btn_submit{
+    border-radius: 50%;
+    background-color:#f3f3f4;
+    padding: 8px;
+    height: 100%;
+    margin-left: 12px;
+    cursor: pointer;
+}
+.finished{
+    background-color: #e4e4e4;
+}
+
+.disabledbutton {
+    pointer-events: none;
+    opacity: 0.4;
+    background-color: #e4e4e4;
+}

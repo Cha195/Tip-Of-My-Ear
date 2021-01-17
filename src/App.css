@@ -1,0 +1,68 @@
+.App {
+  text-align: center;
+}
+
+.card {
+  text-align: center;
+  margin: 20px 50px ;
+  box-shadow: 1px 1px 1px;
+}
+
+.player input {
+  margin-top: 30px;
+  width: 20em;
+  border-radius: 10px;
+  padding: 1em;
+  margin-right: 10px;
+  outline: none;
+}
+
+.songFrame {
+  background: linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5));
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+
+.main_div-genre{
+  min-height: 100vh;
+  height: 100%;
+  padding: 40px;
+  background-color:#fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container-genre{
+  margin-top: 50px;
+  width: 80%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-genre{
+  text-decoration: none;
+  width: 30%;
+  padding: 40px 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  background-color:#ffffff;
+  border-radius: 12px;
+  color: #000000;
+  font-weight: bold;
+  font-size: 30px;
+  margin: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.container-genre a:hover {
+  text-decoration: none;
+}
