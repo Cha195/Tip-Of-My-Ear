@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import tick from './tick.svg';
 import { Modal, ModalBody } from 'reactstrap'
 import './Board.css';
 
@@ -31,14 +32,11 @@ class Board extends Component {
 
     toggle = () => {
         this.setState({modal: !this.state.modal}, () => {
-            console.log(this.state.modal)
-            if(!this.state.modal) {
-                let Id = this.state.value + this.state.column
-                const el = document.getElementById(Id);
-                const elDiv = document.getElementById(Id + 'div')
-                elDiv.style.pointerEvents = "none";
-                elDiv.style.backgroundColor = "lightgrey";
-                console.log(elDiv)
+            console.log(this.state.modal);
+            let Id = this.state.value + this.state.column;
+            const el = document.getElementById(Id);
+
+            if(!this.state.modal && el ) {
                 if(this.state.i %2 === 0) {
                     el.innerHTML = "P2";
                 }
@@ -94,8 +92,9 @@ class Board extends Component {
 
     tileGenerator = (value, column) => {
         let Id = value + column;
+        let divId = Id + 'div';
         return(
-            <div id={Id+'div'} onClick={() => this.tileClick(value, column)} className="card-tile">
+            <div id={divId} onClick={() => this.tileClick(value, column)} className="card-tile">
                 <h2 id={Id}>{value}</h2>
             </div>
         )
@@ -128,8 +127,12 @@ class Board extends Component {
             headers: { 'Authorization': 'Bearer ' + this.state.token }
         })
         .then((song) => {
+            let extraIndex = song.data.tracks.items[0].name.indexOf('-') 
             let featIndex = song.data.tracks.items[0].name.indexOf('(')
             let songName = song.data.tracks.items[0].name;
+            if(extraIndex !== -1) {
+                songName = song.data.tracks.items[0].name.substring(0, extraIndex-1);
+            }
             if(featIndex !== -1) {
                 songName = song.data.tracks.items[0].name.substring(0, featIndex-1);
             }
@@ -157,32 +160,67 @@ class Board extends Component {
     }
 
     handleSubmit = () => {
-        let input = this.state.answer.toLowerCase();
-        let answer = this.state.songName.toLowerCase();
-        if(input === answer) {
-            if(this.state.i % 2 === 0) {
-                this.setState({points2: this.state.points2 + this.state.value, correctAnswer: "Correct!"}, () => {
-                    setTimeout(this.toggle, 3000);
-                })
+        if(this.state.answer) {
+            let input = this.state.answer.toLowerCase();
+            let answer = this.state.songName.toLowerCase();
+            let divId = this.state.value + this.state.column + 'div';
+            const elDiv = document.getElementById(divId);
+            elDiv.style.pointerEvents = "none";
+            if(input === answer) {
+                if(this.state.i % 2 === 0) {
+                    elDiv.style.backgroundColor = "#BBBFFF";
+                    
+                    this.setState({points2: this.state.points2 + this.state.value, correctAnswer: "Correct!"}, () => {
+                        setTimeout(() => {
+                            if(this.state.modal) {
+                                this.toggle();
+                            }
+                        }, 750)
+                    })
+                }
+                else {
+                    elDiv.style.backgroundColor = "#F8C0FD";
+                    this.setState({points1: this.state.points1 + this.state.value, correctAnswer: "Correct!"}, () => {
+                        setTimeout(() => {
+                            if(this.state.modal) {
+                                this.toggle();
+                            }
+                        }, 750)
+                    })
+                }
             }
             else {
-                this.setState({points1: this.state.points1 + this.state.value, correctAnswer: "Correct!"}, () => {
-                    setTimeout(this.toggle, 3000);
-                })
+                elDiv.style.backgroundColor = "lightgrey";
+                let correctAnswer = 'Answer: ' + this.state.songName;
+                this.setState({correctAnswer}, () => {
+                    setTimeout(() => {
+                        if(this.state.modal) {
+                            this.toggle();
+                        }
+                    }, 1500)
+                })   
             }
         }
         else {
+            let divId = this.state.value + this.state.column + 'div';
+            const elDiv = document.getElementById(divId);
+            elDiv.style.pointerEvents = "none";
+            elDiv.style.backgroundColor = "lightgrey";
             let correctAnswer = 'Answer: ' + this.state.songName;
             this.setState({correctAnswer}, () => {
-                setTimeout(this.toggle, 3000);
-            })   
+                setTimeout(() => {
+                    if(this.state.modal) {
+                        this.toggle();
+                    }
+                }, 1500)
+            })
         }
     }
 
     render() { 
         return (
             <>
-                <Modal style={{textAlign: 'center'}} isOpen={this.state.modal} toggle={this.toggle}>
+                <Modal style={{textAlign: 'center', width: "100vw"}} isOpen={this.state.modal} toggle={this.toggle}>
                     <ModalBody>
                         <iframe 
                             title={this.state.songName}
@@ -197,20 +235,20 @@ class Board extends Component {
                         </iframe>
                         <div className="input-tiles-container">
                             <input onChange={this.handleChange} type="text" placeholder="Song name..." id="txt_input_song"/>
-                            <img onClick={this.handleSubmit} src="./tick.svg" alt="tick" id="btn_submit"/>
+                            <img onClick={this.handleSubmit} src={tick} alt="tick" id="btn_submit"/>
                         </div>
                         <h2>{this.state.correctAnswer}</h2>
                     </ModalBody>
                 </Modal>
                 <div className="main_div-tiles">
                     <div className="points_main_div">
-                        <div className="card-points">                    
+                        <div className="card-points" style={{paddingLeft: "10px", borderLeft: "10px solid #F8C0FD"}}>                    
                             <h3>{this.props.location.state.p1Name}</h3>
                             <p>{this.state.points1}</p>
                         </div>
-                        <div className="card-points">
+                        <div className="card-points" style={{paddingRight: "10px", borderRight: "10px solid #BBBFFF"}}>
                             <h3>{this.props.location.state.p2Name}</h3>
-                            <p>{this.state.points2}</p>
+                            <p style={{right: '0'}}>{this.state.points2}</p>
                         </div>
                     </div>
                     <div className="container-tiles">
@@ -219,7 +257,6 @@ class Board extends Component {
                         {this.columnGenerator("2010s")}
                         {this.columnGenerator("2020")}                      
                     </div>
-                    
                 </div>
             </>
         );

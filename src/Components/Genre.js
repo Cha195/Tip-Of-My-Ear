@@ -12,7 +12,7 @@ class Genre extends Component {
         const {p1Name, p2Name} = this.state;
         return(
             <Link to={{pathname: `/board/${cardTitle}`, state: {p1Name: p1Name, p2Name: p2Name}}} className="card-genre">
-                <div >{cardTitle}</div>
+                <div className="genreTitle">{cardTitle}</div>
             </Link>
         );
     }
@@ -20,18 +20,18 @@ class Genre extends Component {
     render() { 
         return (
             <div className="main_div-genre">
-                <h1 style={{marginTop: "50px"}}>Select a genre</h1>
+                <h1 style={{marginTop: "50px"}}>SELECT A GENRE</h1>
                 <div className="player">
                     <input placeholder="Player 1" onChange={(event) => this.setState({p1Name: event.target.value})}/>
                     <input placeholder="Player 2" onChange={(event) => this.setState({p2Name: event.target.value})}/>
                 </div>
                 <div className="container-genre">
-                    {this.genreCard("Rock")}
-                    {this.genreCard("Bollywood")}
-                    {this.genreCard("Metal")}
-                    {this.genreCard("Pop")}
-                    {this.genreCard("Country")}
-                    {this.genreCard("Hip Hop")}
+                    {this.genreCard("ROCK")}
+                    {this.genreCard("BOLLYWOOD")}
+                    {this.genreCard("METAL")}
+                    {this.genreCard("POP")}
+                    {this.genreCard("COUNTRY")}
+                    {this.genreCard("HIP HOP")}
                 </div>
             </div>
         );
