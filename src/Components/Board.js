@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import tick from './tick.svg';
+import logo from './Logo.svg';
 import { Modal, ModalBody } from 'reactstrap'
 import './Board.css';
+import { Link, Redirect } from 'react-router-dom';
 
 class Board extends Component {
     constructor(props) {
@@ -32,29 +34,26 @@ class Board extends Component {
 
     toggle = () => {
         this.setState({modal: !this.state.modal}, () => {
-            console.log(this.state.modal);
+
             let Id = this.state.value + this.state.column;
             const el = document.getElementById(Id);
+            let divId = Id + 'div';
+            const elDiv = document.getElementById(divId);
 
             if(!this.state.modal && el ) {
                 if(this.state.i %2 === 0) {
                     el.innerHTML = "P2";
+                    if(!elDiv.style.backgroundColor) {
+                        elDiv.style.backgroundColor = "lightgrey"
+                    }
                 }
                 else {
                     el.innerHTML = "P1"
-                }
-                if(this.state.i === 20) {
-                    console.log(this.state.points1, this.state.points2)
-                    if(this.state.points1 > this.state.points2) {
-                        alert("Player 1 wins!")
-                    }
-                    else if(this.state.points2 > this.state.points1) {
-                        alert("Player 2 wins!")
-                    }
-                    else {
-                        alert("It's a tie!")
+                    if(!elDiv.style.backgroundColor) {
+                        elDiv.style.backgroundColor = "lightgrey"
                     }
                 }
+                
                 this.setState({
                     url: '', 
                     correctAnswer: null,
@@ -65,6 +64,18 @@ class Board extends Component {
                 })
             }
         })
+        if(this.state.i === 20) {
+            console.log(this.state.points1, this.state.points2)
+            if(this.state.points1 > this.state.points2) {
+                alert("Player 1 wins!")
+            }
+            else if(this.state.points2 > this.state.points1) {
+                alert("Player 2 wins!")
+            }
+            else {
+                alert("It's a tie!")
+            }
+        }
     }
 
     tileClick = (value, column) => {
@@ -127,17 +138,19 @@ class Board extends Component {
             headers: { 'Authorization': 'Bearer ' + this.state.token }
         })
         .then((song) => {
-            let extraIndex = song.data.tracks.items[0].name.indexOf('-') 
-            let featIndex = song.data.tracks.items[0].name.indexOf('(')
-            let songName = song.data.tracks.items[0].name;
-            if(extraIndex !== -1) {
-                songName = song.data.tracks.items[0].name.substring(0, extraIndex-1);
+            if(song.data.tracks.items[0]) {
+                let extraIndex = song.data.tracks.items[0].name.indexOf('-') 
+                let featIndex = song.data.tracks.items[0].name.indexOf('(')
+                let songName = song.data.tracks.items[0].name;
+                if(extraIndex !== -1) {
+                    songName = song.data.tracks.items[0].name.substring(0, extraIndex-1);
+                }
+                if(featIndex !== -1) {
+                    songName = song.data.tracks.items[0].name.substring(0, featIndex-1);
+                }
+                this.setState({ songName, url: "https://open.spotify.com/embed/track/" + song.data.tracks.items[0].id });
+                console.log(songName, song.data.tracks.items[0]);
             }
-            if(featIndex !== -1) {
-                songName = song.data.tracks.items[0].name.substring(0, featIndex-1);
-            }
-            this.setState({ songName, url: "https://open.spotify.com/embed/track/" + song.data.tracks.items[0].id });
-            console.log(songName, song.data.tracks.items[0]);
         })
     }
 
@@ -163,13 +176,14 @@ class Board extends Component {
         if(this.state.answer) {
             let input = this.state.answer.toLowerCase();
             let answer = this.state.songName.toLowerCase();
+            
             let divId = this.state.value + this.state.column + 'div';
             const elDiv = document.getElementById(divId);
             elDiv.style.pointerEvents = "none";
+
             if(input === answer) {
                 if(this.state.i % 2 === 0) {
                     elDiv.style.backgroundColor = "#BBBFFF";
-                    
                     this.setState({points2: this.state.points2 + this.state.value, correctAnswer: "Correct!"}, () => {
                         setTimeout(() => {
                             if(this.state.modal) {
@@ -234,7 +248,7 @@ class Board extends Component {
                         >
                         </iframe>
                         <div className="input-tiles-container">
-                            <input onChange={this.handleChange} type="text" placeholder="Song name..." id="txt_input_song"/>
+                            <input onChange={this.handleChange} type="text" placeholder="Song name..." id="txt_input_song" autoComplete="off"/>
                             <img onClick={this.handleSubmit} src={tick} alt="tick" id="btn_submit"/>
                         </div>
                         <h2>{this.state.correctAnswer}</h2>
@@ -246,6 +260,9 @@ class Board extends Component {
                             <h3>{this.props.location.state.p1Name}</h3>
                             <p>{this.state.points1}</p>
                         </div>
+                        <Link to="/" exact>
+                            <img style={{width: "57%", height: "100%", cursor: "pointer"}} alt="logo" src={logo}/>
+                        </Link>
                         <div className="card-points" style={{paddingRight: "10px", borderRight: "10px solid #BBBFFF"}}>
                             <h3>{this.props.location.state.p2Name}</h3>
                             <p style={{right: '0'}}>{this.state.points2}</p>
