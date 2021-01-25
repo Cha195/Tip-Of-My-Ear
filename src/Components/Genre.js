@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import logo from './Main_Logo.svg';
 import { Link } from 'react-router-dom';
 
 class Genre extends Component {
@@ -20,10 +21,11 @@ class Genre extends Component {
     render() { 
         return (
             <div className="main_div-genre">
+                <img style={{width: "190px"}} alt="logo" src={logo}/>
                 <h1 style={{marginTop: "50px"}}>SELECT A GENRE</h1>
                 <div className="player">
-                    <input placeholder="Player 1" onChange={(event) => this.setState({p1Name: event.target.value})}/>
-                    <input placeholder="Player 2" onChange={(event) => this.setState({p2Name: event.target.value})}/>
+                    <input style={{border: "0px"}} placeholder="Player 1" onChange={(event) => this.setState({p1Name: event.target.value})}/>
+                    <input style={{border: "0px"}} placeholder="Player 2" onChange={(event) => this.setState({p2Name: event.target.value})}/>
                 </div>
                 <div className="container-genre">
                     {this.genreCard("ROCK")}

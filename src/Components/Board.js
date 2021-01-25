@@ -23,7 +23,9 @@ class Board extends Component {
             points1: 0,
             points2: 0,
             correctAnswer: null, 
-            i: 0
+            i: 0,
+            winnerMessage: '',
+            winnerModal: false
         }
         this.spotify = {
             ClientID: "300ac44065c949639fb54d90157e9caf",
@@ -64,18 +66,10 @@ class Board extends Component {
                 })
             }
         })
-        if(this.state.i === 20) {
-            console.log(this.state.points1, this.state.points2)
-            if(this.state.points1 > this.state.points2) {
-                alert("Player 1 wins!")
-            }
-            else if(this.state.points2 > this.state.points1) {
-                alert("Player 2 wins!")
-            }
-            else {
-                alert("It's a tie!")
-            }
-        }
+    }
+
+    winnerToggle = () => {
+        this.setState({winnerModal: !this.state.winnerModal});
     }
 
     tileClick = (value, column) => {
@@ -149,7 +143,6 @@ class Board extends Component {
                     songName = song.data.tracks.items[0].name.substring(0, featIndex-1);
                 }
                 this.setState({ songName, url: "https://open.spotify.com/embed/track/" + song.data.tracks.items[0].id });
-                console.log(songName, song.data.tracks.items[0]);
             }
         })
     }
@@ -206,13 +199,24 @@ class Board extends Component {
             else {
                 elDiv.style.backgroundColor = "lightgrey";
                 let correctAnswer = 'Answer: ' + this.state.songName;
-                this.setState({correctAnswer}, () => {
-                    setTimeout(() => {
-                        if(this.state.modal) {
-                            this.toggle();
-                        }
-                    }, 1500)
-                })   
+                if(this.state.i % 2 === 0) {
+                    this.setState({points2: this.state.points2 - this.state.value/10, correctAnswer}, () => {
+                        setTimeout(() => {
+                            if(this.state.modal) {
+                                this.toggle();
+                            }
+                        }, 1000)
+                    })
+                }
+                else {
+                    this.setState({points1: this.state.points1 - this.state.value/10, correctAnswer}, () => {
+                        setTimeout(() => {
+                            if(this.state.modal) {
+                                this.toggle();
+                            }
+                        }, 1000)
+                    })
+                } 
             }
         }
         else {
@@ -226,15 +230,29 @@ class Board extends Component {
                     if(this.state.modal) {
                         this.toggle();
                     }
-                }, 1500)
+                }, 1000)
             })
+        }
+        if(this.state.i === 20) {
+            setTimeout(() => {
+                if(this.state.points1 > this.state.points2) {
+                    this.setState({winnerMessage: `${this.props.location.state.p1Name} is the winner!`}, () => this.winnerToggle());
+                    
+                }
+                else if(this.state.points2 > this.state.points1) {
+                    this.setState({winnerMessage: `${this.props.location.state.p2Name} is the winner!`}, () => this.winnerToggle());
+                }
+                else {
+                    this.setState({winnerMessage: `It is tie!`}, () => this.winnerToggle());
+                }
+            }, 2000)
         }
     }
 
     render() { 
         return (
             <>
-                <Modal style={{textAlign: 'center', width: "100vw"}} isOpen={this.state.modal} toggle={this.toggle}>
+                <Modal style={{textAlign: 'center', width: "100vw"}} isOpen={this.state.modal}>
                     <ModalBody>
                         <iframe 
                             title={this.state.songName}
@@ -254,13 +272,19 @@ class Board extends Component {
                         <h2>{this.state.correctAnswer}</h2>
                     </ModalBody>
                 </Modal>
+                <Modal style={{textAlign: 'center', width: "100vw", padding: "50px"}}  isOpen={this.state.winnerModal}>
+                    <ModalBody>
+                        <h1>{this.state.winnerMessage}</h1>
+                        <img onClick={this.winnerToggle} style={{width: "50px"}} src={tick} alt="tick" id="btn_submit"/>
+                    </ModalBody>
+                </Modal>
                 <div className="main_div-tiles">
                     <div className="points_main_div">
                         <div className="card-points" style={{paddingLeft: "10px", borderLeft: "10px solid #F8C0FD"}}>                    
                             <h3>{this.props.location.state.p1Name}</h3>
                             <p>{this.state.points1}</p>
                         </div>
-                        <Link to="/" exact>
+                        <Link to="/">
                             <img style={{width: "57%", height: "100%", cursor: "pointer"}} alt="logo" src={logo}/>
                         </Link>
                         <div className="card-points" style={{paddingRight: "10px", borderRight: "10px solid #BBBFFF"}}>
