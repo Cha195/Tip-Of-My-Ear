@@ -4,7 +4,7 @@ import tick from './tick.svg';
 import logo from './Logo.svg';
 import { Modal, ModalBody } from 'reactstrap'
 import './Board.css';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 class Board extends Component {
     constructor(props) {
@@ -143,6 +143,9 @@ class Board extends Component {
                     songName = song.data.tracks.items[0].name.substring(0, featIndex-1);
                 }
                 this.setState({ songName, url: "https://open.spotify.com/embed/track/" + song.data.tracks.items[0].id });
+            }
+            else {
+                this.getSong();
             }
         })
     }
