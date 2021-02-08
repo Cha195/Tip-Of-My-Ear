@@ -135,9 +135,13 @@ class Board extends Component {
             if(song.data.tracks.items[0]) {
                 let extraIndex = song.data.tracks.items[0].name.indexOf('-') 
                 let featIndex = song.data.tracks.items[0].name.indexOf('(')
+                let authorIndex = song.data.tracks.items[0].name.indexOf('[')
                 let songName = song.data.tracks.items[0].name;
                 if(extraIndex !== -1) {
                     songName = song.data.tracks.items[0].name.substring(0, extraIndex-1);
+                }
+                if(extraIndex !== -1) {
+                    songName = song.data.tracks.items[0].name.substring(0, authorIndex-1);
                 }
                 if(featIndex !== -1) {
                     songName = song.data.tracks.items[0].name.substring(0, featIndex-1);
