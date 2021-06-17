@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './Main_Logo.png';
+import logo from '../Assets/Main_Logo.png';
 import { Link } from 'react-router-dom';
 
 class Genre extends Component {

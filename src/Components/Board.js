@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import tick from './tick.svg';
-import logo from './Logo.svg';
+import tick from '../Assets/tick.svg';
+import logo from '../Assets/Logo.svg';
 import { Modal, ModalBody } from 'reactstrap'
 import './Board.css';
 import { Link } from 'react-router-dom';
