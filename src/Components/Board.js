@@ -16,10 +16,8 @@ const Board = (props) => {
   const [songName, setSongName] = useState('')
   const [url, setUrl] = useState('')
   const [answer, setAnswer] = useState('')
-  const [points, setPoints] = useState({
-    player1: 0,
-    player2: 0
-  })
+  const [player1, setPlayer1] = useState(0)
+  const [player2, setPlayer2] = useState(0)
   const [correctAnswer, setCorrectAnswer] = useState('')
   const [iterator, setIterator] = useState(0)
   const [winnerMessage, setWinnerMessage] = useState('')
@@ -32,33 +30,35 @@ const Board = (props) => {
   }
 
   const toggle = () => {
-    setModal(!modal, () => {
-      const Id = value + column
-      const el = document.getElementById(Id)
-      const divId = Id + 'div'
-      const elDiv = document.getElementById(divId)
-
-      if (!modal && el) {
-        if (iterator % 2 === 0) {
-          el.innerHTML = 'P2'
-          if (!elDiv.style.backgroundColor) {
-            elDiv.style.backgroundColor = 'lightgrey'
-          }
-        } else {
-          el.innerHTML = 'P1'
-          if (!elDiv.style.backgroundColor) {
-            elDiv.style.backgroundColor = 'lightgrey'
-          }
-        }
-        setUrl('')
-        setCorrectAnswer('')
-        setAnswer('')
-        setSongName('')
-        setColumn(null)
-        setValue(null)
-      }
-    })
+    setModal(!modal)
   }
+
+  useEffect(() => {
+    const Id = value + column
+    const el = document.getElementById(Id)
+    const divId = Id + 'div'
+    const elDiv = document.getElementById(divId)
+
+    if (!modal && el) {
+      if (iterator % 2 === 0) {
+        el.innerHTML = 'P2'
+        if (!elDiv.style.backgroundColor) {
+          elDiv.style.backgroundColor = 'lightgrey'
+        }
+      } else {
+        el.innerHTML = 'P1'
+        if (!elDiv.style.backgroundColor) {
+          elDiv.style.backgroundColor = 'lightgrey'
+        }
+      }
+      setUrl('')
+      setCorrectAnswer('')
+      setAnswer('')
+      setSongName('')
+      setColumn(null)
+      setValue(null)
+    }
+  }, [modal])
 
   const winnerToggle = () => {
     setWinnerModal(!winnerModal)
@@ -83,11 +83,15 @@ const Board = (props) => {
     }
     setValue(value)
     setColumn(column)
-    setIterator(iterator + 1, () => {
+    setIterator(iterator + 1)
+  }
+
+  useEffect(() => {
+    if (iterator > 0) {
       getSong()
       toggle()
-    })
-  }
+    }
+  }, [iterator])
 
   const tileGenerator = (value, column) => {
     const Id = value + column
@@ -160,10 +164,18 @@ const Board = (props) => {
     }).then(tokenResponse => {
       setToken(tokenResponse.data.access_token)
     })
-  }, [])
+  }, [spotify.ClientID, spotify.ClientSecret])
 
   const handleChange = (event) => {
     setAnswer(event.target.value)
+  }
+
+  const handleToggle = (millisecs) => {
+    setTimeout(() => {
+      if (modal) {
+        toggle()
+      }
+    }, millisecs)
   }
 
   const handleSubmit = () => {
@@ -177,44 +189,22 @@ const Board = (props) => {
       if (input === correctAns) {
         if (iterator % 2 === 0) {
           elDiv.style.backgroundColor = '#BBBFFF'
-          setPoints({ player2: points.player2 + value })
-          setCorrectAnswer('Correct!', () => {
-            setTimeout(() => {
-              if (modal) {
-                toggle()
-              }
-            }, 750)
-          })
+          setPlayer2(player2 + value)
         } else {
           elDiv.style.backgroundColor = '#F8C0FD'
-          setPoints({ player1: points.player1 + value }, () => {
-            setTimeout(() => {
-              if (modal) {
-                toggle()
-              }
-            }, 750)
-          })
+          setPlayer1(player1 + value)
         }
+        setCorrectAnswer('Correct!')
+        handleToggle(750)
       } else {
         elDiv.style.backgroundColor = 'lightgrey'
         const correctAns = 'Answer: ' + songName
         if (iterator % 2 === 0) {
-          setPoints({ player2: points.player2 - value }, () => {
-            setTimeout(() => {
-              if (modal) {
-                toggle()
-              }
-            }, 1000)
-          })
+          setPlayer2(player2 - value)
         } else {
-          setPoints({ player1: points.player1 - value }, () => {
-            setTimeout(() => {
-              if (modal) {
-                toggle()
-              }
-            }, 1000)
-          })
+          setPlayer1(player1 - value)
         }
+        handleToggle(1000)
         setCorrectAnswer(correctAns)
       }
     } else {
@@ -223,23 +213,19 @@ const Board = (props) => {
       elDiv.style.pointerEvents = 'none'
       elDiv.style.backgroundColor = 'lightgrey'
       const correctAns = 'Answer: ' + songName
-      setCorrectAnswer(correctAns, () => {
-        setTimeout(() => {
-          if (modal) {
-            toggle()
-          }
-        }, 1000)
-      })
+      setCorrectAnswer(correctAns)
+      handleToggle(1000)
     }
     if (iterator === 20) {
       setTimeout(() => {
-        if (points.player1 > points.player2) {
-          setWinnerMessage(`${props.location.state.p1Name} is the winner!`, () => winnerToggle())
-        } else if (points.player2 > points.player1) {
-          setWinnerMessage(`${props.location.state.p2Name} is the winner!`, () => winnerToggle())
+        if (player1 > player2) {
+          setWinnerMessage(`${props.location.state.p1Name} is the winner!`)
+        } else if (player2 > player1) {
+          setWinnerMessage(`${props.location.state.p2Name} is the winner!`)
         } else {
-          setWinnerMessage('It is a tie!', () => winnerToggle())
+          setWinnerMessage('It is a tie!')
         }
+        winnerToggle()
       }, 2000)
     }
   }
@@ -275,14 +261,14 @@ const Board = (props) => {
         <div className='points_main_div'>
           <div className='card-points' style={{ paddingLeft: '10px', borderLeft: '10px solid #F8C0FD' }}>
             <h3>{props.location.state.p1Name}</h3>
-            <p>{points.player1}</p>
+            <p>{player1}</p>
           </div>
           <Link to='/'>
             <img style={{ width: '57%', height: '100%', cursor: 'pointer' }} alt='logo' src={logo} />
           </Link>
           <div className='card-points' style={{ paddingRight: '10px', borderRight: '10px solid #BBBFFF' }}>
             <h3>{props.location.state.p2Name}</h3>
-            <p style={{ right: '0' }}>{points.player2}</p>
+            <p style={{ right: '0' }}>{player2}</p>
           </div>
         </div>
         <div className='container-tiles'>
