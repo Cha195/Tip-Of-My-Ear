@@ -3,11 +3,12 @@ import axios from 'axios'
 import tick from '../Assets/tick.svg'
 import logo from '../Assets/Logo.svg'
 import { Modal, ModalBody } from 'reactstrap'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import './Board.css'
 
 const Board = (props) => {
   const { match: { params } } = props
+  const history = useHistory()
   const [modal, setModal] = useState(false)
   const [column, setColumn] = useState(null)
   const [value, setValue] = useState(100)
@@ -25,8 +26,8 @@ const Board = (props) => {
   const genre = params.genre
 
   const spotify = {
-    ClientID: '300ac44065c949639fb54d90157e9caf',
-    ClientSecret: '4eba312ff5f6466ba0728c944ccb2ce0'
+    ClientID: process.env.REACT_APP_CLIENT_ID,
+    ClientSecret: process.env.REACT_APP_CLIENT_SECRET
   }
 
   const toggle = () => {
@@ -58,10 +59,13 @@ const Board = (props) => {
       setColumn(null)
       setValue(null)
     }
-  }, [modal])
+  }, [modal, column, iterator, value])
 
   const winnerToggle = () => {
     setWinnerModal(!winnerModal)
+    if (winnerModal) {
+      history.push('/')
+    }
   }
 
   const tileClick = (value, column) => {
@@ -88,10 +92,41 @@ const Board = (props) => {
 
   useEffect(() => {
     if (iterator > 0) {
+      const getSong = async () => {
+        const randomOffset = Math.floor(Math.random() * value)
+        const searchQuery = getRandomSearch()
+
+        await axios({
+          method: 'GET',
+          url: `https://api.spotify.com/v1/search?query=${searchQuery}%20genre:%22${genre}%22%20year:${year}&type=track&limit=1&offset=${randomOffset}`,
+          headers: { Authorization: 'Bearer ' + token }
+        }).then((song) => {
+          if (song.data.tracks.items[0]) {
+            const track = song.data.tracks.items[0]
+            const extraIndex = track.name.indexOf('-')
+            const featIndex = track.name.indexOf('(')
+            const authorIndex = track.name.indexOf('[')
+            let songName = track.name
+            if (extraIndex !== -1) {
+              songName = songName.substring(0, extraIndex - 1)
+            }
+            if (extraIndex !== -1) {
+              songName = songName.substring(0, authorIndex - 1)
+            }
+            if (featIndex !== -1) {
+              songName = songName.substring(0, featIndex - 1)
+            }
+            setSongName(songName)
+            setUrl('https://open.spotify.com/embed/track/' + track.id)
+          } else {
+            getSong()
+          }
+        })
+      }
       getSong()
       toggle()
     }
-  }, [iterator])
+  }, [iterator, genre])
 
   const tileGenerator = (value, column) => {
     const Id = value + column
@@ -119,38 +154,6 @@ const Board = (props) => {
   const getRandomSearch = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyz'
     return characters.charAt(Math.floor(Math.random() * characters.length))
-  }
-
-  const getSong = () => {
-    const randomOffset = Math.floor(Math.random() * value)
-    const searchQuery = getRandomSearch()
-
-    axios({
-      method: 'GET',
-      url: `https://api.spotify.com/v1/search?query=${searchQuery}%20genre:%22${genre}%22%20year:${year}&type=track&limit=1&offset=${randomOffset}`,
-      headers: { Authorization: 'Bearer ' + token }
-    }).then((song) => {
-      if (song.data.tracks.items[0]) {
-        const track = song.data.tracks.items[0]
-        const extraIndex = track.name.indexOf('-')
-        const featIndex = track.name.indexOf('(')
-        const authorIndex = track.name.indexOf('[')
-        let songName = track.name
-        if (extraIndex !== -1) {
-          songName = songName.substring(0, extraIndex - 1)
-        }
-        if (extraIndex !== -1) {
-          songName = songName.substring(0, authorIndex - 1)
-        }
-        if (featIndex !== -1) {
-          songName = songName.substring(0, featIndex - 1)
-        }
-        setSongName(songName)
-        setUrl('https://open.spotify.com/embed/track/' + track.id)
-      } else {
-        getSong()
-      }
-    })
   }
 
   useEffect(() => {

@@ -101,3 +101,18 @@
   opacity: 0.4;
   background-color: #e4e4e4;
 }
+
+@media only screen and (min-device-width: 768px)  and (max-width: 1024px) {
+  .container-tiles{
+    max-width: 500px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+  }
+  
+}
+
+@media only screen and (max-width: 768px) {
+
+}
