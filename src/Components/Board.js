@@ -10,6 +10,7 @@ const Board = (props) => {
   const { match: { params } } = props
   const history = useHistory()
   const [modal, setModal] = useState(false)
+  const [valueChange, setvalueChange] = useState(false)
   const [column, setColumn] = useState(null)
   const [value, setValue] = useState(100)
   const [year, setYear] = useState('2020-2021')
@@ -30,36 +31,18 @@ const Board = (props) => {
     ClientSecret: process.env.REACT_APP_CLIENT_SECRET
   }
 
-  const toggle = () => {
-    setModal(!modal)
-  }
-
   useEffect(() => {
-    const Id = value + column
-    const el = document.getElementById(Id)
-    const divId = Id + 'div'
-    const elDiv = document.getElementById(divId)
-
-    if (!modal && el) {
-      if (iterator % 2 === 0) {
-        el.innerHTML = 'P2'
-        if (!elDiv.style.backgroundColor) {
-          elDiv.style.backgroundColor = 'lightgrey'
-        }
-      } else {
-        el.innerHTML = 'P1'
-        if (!elDiv.style.backgroundColor) {
-          elDiv.style.backgroundColor = 'lightgrey'
-        }
-      }
-      setUrl('')
-      setCorrectAnswer('')
-      setAnswer('')
-      setSongName('')
-      setColumn(null)
-      setValue(null)
-    }
-  }, [modal, column, iterator, value])
+    axios('https://accounts.spotify.com/api/token', {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization: 'Basic ' + window.btoa(spotify.ClientID + ':' + spotify.ClientSecret)
+      },
+      data: 'grant_type=client_credentials',
+      method: 'POST'
+    }).then(tokenResponse => {
+      setToken(tokenResponse.data.access_token)
+    })
+  }, [spotify.ClientID, spotify.ClientSecret])
 
   const winnerToggle = () => {
     setWinnerModal(!winnerModal)
@@ -85,13 +68,15 @@ const Board = (props) => {
       default:
         setYear('2020-2021')
     }
+    setvalueChange(true)
     setValue(value)
     setColumn(column)
     setIterator(iterator + 1)
+    setModal(true)
   }
 
   useEffect(() => {
-    if (iterator > 0) {
+    if (valueChange && iterator > 0) {
       const getSong = async () => {
         const randomOffset = Math.floor(Math.random() * value)
         const searchQuery = getRandomSearch()
@@ -124,9 +109,8 @@ const Board = (props) => {
         })
       }
       getSong()
-      toggle()
     }
-  }, [iterator, genre])
+  }, [valueChange, iterator, genre, token, value, year])
 
   const tileGenerator = (value, column) => {
     const Id = value + column
@@ -156,67 +140,54 @@ const Board = (props) => {
     return characters.charAt(Math.floor(Math.random() * characters.length))
   }
 
-  useEffect(() => {
-    axios('https://accounts.spotify.com/api/token', {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: 'Basic ' + window.btoa(spotify.ClientID + ':' + spotify.ClientSecret)
-      },
-      data: 'grant_type=client_credentials',
-      method: 'POST'
-    }).then(tokenResponse => {
-      setToken(tokenResponse.data.access_token)
-    })
-  }, [spotify.ClientID, spotify.ClientSecret])
-
   const handleChange = (event) => {
     setAnswer(event.target.value)
   }
 
   const handleToggle = (millisecs) => {
     setTimeout(() => {
-      if (modal) {
-        toggle()
-      }
+      setModal(false)
     }, millisecs)
   }
 
   const handleSubmit = () => {
-    if (answer) {
-      const input = answer.toLowerCase()
-      const correctAns = songName.toLowerCase()
-      const divId = value + column + 'div'
-      const elDiv = document.getElementById(divId)
-      elDiv.style.pointerEvents = 'none'
+    const divId = value + column + 'div'
+    const elDiv = document.getElementById(divId)
+    elDiv.style.pointerEvents = 'none'
 
-      if (input === correctAns) {
+    if (answer) {
+      if (answer.toLowerCase() === songName.toLowerCase()) {
         if (iterator % 2 === 0) {
           elDiv.style.backgroundColor = '#BBBFFF'
+          elDiv.innerHTML = 'P2'
           setPlayer2(player2 + value)
         } else {
           elDiv.style.backgroundColor = '#F8C0FD'
+          elDiv.innerHTML = 'P1'
           setPlayer1(player1 + value)
         }
         setCorrectAnswer('Correct!')
         handleToggle(750)
       } else {
         elDiv.style.backgroundColor = 'lightgrey'
-        const correctAns = 'Answer: ' + songName
         if (iterator % 2 === 0) {
+          elDiv.innerHTML = 'P2'
           setPlayer2(player2 - value)
         } else {
+          elDiv.innerHTML = 'P1'
           setPlayer1(player1 - value)
         }
         handleToggle(1000)
-        setCorrectAnswer(correctAns)
+        setCorrectAnswer('Answer: ' + songName)
       }
     } else {
-      const divId = value + column + 'div'
-      const elDiv = document.getElementById(divId)
-      elDiv.style.pointerEvents = 'none'
       elDiv.style.backgroundColor = 'lightgrey'
-      const correctAns = 'Answer: ' + songName
-      setCorrectAnswer(correctAns)
+      if (iterator % 2 === 0) {
+        elDiv.innerHTML = 'P2'
+      } else {
+        elDiv.innerHTML = 'P1'
+      }
+      setCorrectAnswer('Answer: ' + songName)
       handleToggle(1000)
     }
     if (iterator === 20) {
@@ -232,6 +203,18 @@ const Board = (props) => {
       }, 2000)
     }
   }
+
+  useEffect(() => {
+    if (!modal) {
+      setUrl('')
+      setCorrectAnswer('')
+      setAnswer('')
+      setSongName('')
+      setColumn(null)
+      setValue(null)
+      setvalueChange(false)
+    }
+  }, [modal])
 
   return (
     <>
