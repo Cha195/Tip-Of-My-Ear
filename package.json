@@ -35,5 +35,8 @@
     "not ie 11",
     "not dead",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "postcss": "^8.4.5"
+  }
 }
